@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FREE QR Code Generator by Alex Joita</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .customization-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .customization-panel.open {
+            max-height: 500px; /* Adjust as needed, should be larger than content */
+            transition: max-height 0.5s ease-in;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3b82f6;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        #qr-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: rgba(255, 0, 0, 0.3);
+            pointer-events: none;
+            text-align: center;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-8">
+    <div class="bg-white shadow-xl rounded-2xl p-6 sm:p-10 flex flex-col items-center max-w-lg w-full transform transition-all duration-300 hover:scale-105">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6 text-center">FREE QR Code Generator by Alex Joita</h1>
+
+        <div class="w-full mb-6">
+            <label for="qr-text" class="block text-gray-700 font-medium mb-2">Enter your text or URL:</label>
+            <textarea id="qr-text" class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300" rows="4" placeholder="e.g., Hello, world! or https://google.com"></textarea>
+        </div>
+        
+        <button id="customize-btn" class="w-full bg-gray-200 text-gray-700 font-semibold py-3 sm:py-4 rounded-full shadow-lg hover:bg-gray-300 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 mb-4">
+            Customize
+        </button>
+
+        <div id="customization-panel" class="customization-panel w-full border-t pt-4 mt-4">
+            <div class="mb-4">
+                <label for="dark-color" class="block text-gray-700 font-medium mb-2">QR Code Color:</label>
+                <input type="color" id="dark-color" value="#000000" class="w-full h-12 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
+            </div>
+            <div class="mb-4">
+                <label for="light-color" class="block text-gray-700 font-medium mb-2">Background Color:</label>
+                <input type="color" id="light-color" value="#ffffff" class="w-full h-12 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
+            </div>
+        </div>
+
+        <button id="generate-btn" class="w-full bg-blue-600 text-white font-semibold py-3 sm:py-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Generate QR Code
+        </button>
+
+        <!-- QR Code Display Area -->
+        <div id="qrcode-container" class="mt-8 relative flex justify-center items-center w-64 h-64 border-4 border-dashed border-gray-300 rounded-xl transition-all duration-300">
+            <p class="text-gray-400 text-sm text-center">Your QR code will appear here.</p>
+        </div>
+
+        <button id="download-btn" class="mt-6 w-full bg-green-500 text-white font-semibold py-3 sm:py-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 hidden">
+            Download QR Code
+        </button>
+        
+        <p class="mt-8 mb-4 text-center text-gray-600 font-semibold">Thank you for appreciating my work :)</p>
+
+        <!-- New redirect buttons -->
+        <a id="paypal-btn" href="https://www.paypal.com/paypalme/alexjoita88" target="_blank" class="w-full bg-blue-800 text-white text-center font-semibold py-3 sm:py-4 rounded-full shadow-lg hover:bg-blue-900 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2 flex items-center justify-center">
+            <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-mark-color.svg" alt="PayPal Logo" class="h-6 w-6 mr-2">
+            <span>Donate with PayPal</span>
+        </a>
+
+        <a id="buymeacoffee-btn" href="https://buymeacoffee.com/alexjoita" target="_blank" class="mt-4 w-full bg-yellow-400 text-white text-center font-semibold py-3 sm:py-4 rounded-full shadow-lg hover:bg-yellow-500 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2 flex items-center justify-center">
+            <img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy Me a Coffee Logo" class="h-6 w-6 mr-2">
+            <span>Buy me a coffee</span>
+        </a>
+        
+        <a id="redirect-btn" href="https://alexjoita.com/#about" target="_blank" class="mt-4 w-full bg-gray-600 text-white text-center font-semibold py-3 sm:py-4 rounded-full shadow-lg hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+            Visit alexjoita.com website
+        </a>
+    </div>
+
+    <!-- Load the QR Code library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const qrTextarea = document.getElementById('qr-text');
+            const generateBtn = document.getElementById('generate-btn');
+            const customizeBtn = document.getElementById('customize-btn');
+            const customizationPanel = document.getElementById('customization-panel');
+            const darkColorInput = document.getElementById('dark-color');
+            const lightColorInput = document.getElementById('light-color');
+            const qrcodeContainer = document.getElementById('qrcode-container');
+            const downloadBtn = document.getElementById('download-btn');
+
+            // Toggle customization panel visibility
+            customizeBtn.addEventListener('click', () => {
+                customizationPanel.classList.toggle('open');
+            });
+
+            generateBtn.addEventListener('click', () => {
+                const text = qrTextarea.value.trim();
+                
+                // Clear the container
+                qrcodeContainer.innerHTML = `<p class="text-gray-400 text-sm text-center">Your QR code will appear here.</p>`;
+                downloadBtn.classList.add('hidden');
+
+                if (text) {
+                    setTimeout(() => {
+                        try {
+                            // Create new QR Code instance
+                            new QRCode(qrcodeContainer, {
+                                text: text,
+                                width: 256,
+                                height: 256,
+                                colorDark: darkColorInput.value,
+                                colorLight: lightColorInput.value,
+                                correctLevel: QRCode.CorrectLevel.H
+                            });
+                            downloadBtn.classList.remove('hidden');
+                        } catch (e) {
+                            qrcodeContainer.innerHTML = `<p class="text-red-500 text-center">Error generating QR code. Please check your inputs.</p>`;
+                            console.error(e);
+                        }
+                    }, 10);
+                } else {
+                    qrcodeContainer.innerHTML = `<p class="text-red-500 text-center">Please enter some text or a URL.</p>`;
+                }
+            });
+
+            // Download button logic
+            downloadBtn.addEventListener('click', () => {
+                const canvas = qrcodeContainer.querySelector('canvas');
+                if (canvas) {
+                    const link = document.createElement('a');
+                    link.href = canvas.toDataURL("image/png");
+                    link.download = 'qrcode.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    console.error("Canvas element not found for download.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
